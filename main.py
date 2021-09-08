@@ -18,7 +18,7 @@ logger = logging.getLogger('json-logger')
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.INFO)
 
-costs = 0.0
+costs = 0
 
 
 def job():
@@ -34,13 +34,13 @@ def job():
     sheet.insert_data(yesterday.strftime(date_format), str(billing))
 
     global costs
-    costs += billing
-    if costs >= 20000.0:
-        message = f'Затраты на облако привысили 20000 и составляют {costs} рублей\nСчетчик будет сброшен завтра'
+    costs = costs + int(billing * 100)
+    if costs >= 20000 * 100:
+        message = f'Затраты на облако превысили 20000 и составляют {round(costs / 100, 2)} рублей\nСчетчик будет сброшен завтра'
         r = tg.send_tg_message(message)
-        costs = 0.0
+        costs = 0
     else:
-        message = f'Затраты на облако составляют {costs} рублей'
+        message = f'Затраты на облако составляют {round(costs / 100, 2)} рублей'
         r = tg.send_tg_message(message)
 
     logger.info(dumps(r))
